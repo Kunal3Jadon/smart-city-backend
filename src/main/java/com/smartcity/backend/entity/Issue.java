@@ -37,7 +37,11 @@ public class Issue {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
+    
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

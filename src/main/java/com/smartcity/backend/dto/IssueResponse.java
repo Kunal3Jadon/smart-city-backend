@@ -12,7 +12,9 @@ public class IssueResponse {
 	 private Long id;
 	 private String title;
 	 private String description;
-	 private IssueStatus status;
+	 private IssueStatus status; 
 	 private Priority priority;
 	 private LocalDateTime createdAt;
+	 private String departmentName;
+	 private String imageUrl;
 }

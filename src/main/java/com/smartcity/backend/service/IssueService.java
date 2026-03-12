@@ -7,8 +7,8 @@ import com.smartcity.backend.dto.IssueResponse;
 import com.smartcity.backend.entity.IssueStatus;
 
 public interface IssueService {
-	IssueResponse createIssue(IssueRequest request, Long userId);
-
+	IssueResponse createIssue(IssueRequest request, Long userId, String imageUrl);
+	
     List<IssueResponse> getAllIssues();
 
     IssueResponse getIssueById(Long id);
@@ -16,4 +16,8 @@ public interface IssueService {
     List<IssueResponse> getIssuesByUser(Long userId);
 
     IssueResponse updateIssueStatus(Long id, IssueStatus status);
+    
+    IssueResponse assignDepartment(Long issueId, Long departmentId);
+    
+    void updateImage(Long issueId, String fileName);
 }

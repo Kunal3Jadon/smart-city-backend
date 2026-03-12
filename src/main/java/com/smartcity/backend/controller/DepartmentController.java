@@ -5,7 +5,7 @@ import com.smartcity.backend.dto.DepartmentResponse;
 import com.smartcity.backend.service.DepartmentService;
 
 import lombok.RequiredArgsConstructor;
-
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ public class DepartmentController {
     
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public DepartmentResponse createDepartment(@RequestBody DepartmentRequest request) {
+    public DepartmentResponse createDepartment(@Valid @RequestBody DepartmentRequest request) {
 
         return departmentService.createDepartment(request);
     }

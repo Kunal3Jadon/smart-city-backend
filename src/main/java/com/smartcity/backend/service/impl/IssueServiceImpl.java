@@ -5,6 +5,7 @@ import java.util.List;
 import com.smartcity.backend.dto.IssueRequest;
 import com.smartcity.backend.dto.IssueResponse;
 import com.smartcity.backend.entity.*;
+import com.smartcity.backend.repository.DepartmentRepository;
 import com.smartcity.backend.repository.IssueRepository;
 import com.smartcity.backend.repository.UserRepository;
 import com.smartcity.backend.service.IssueService;
@@ -20,28 +21,34 @@ import java.util.stream.Collectors;
 public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
     private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
     
 	@Override
-	public IssueResponse createIssue(IssueRequest request, Long userId) {
+	public IssueResponse createIssue(IssueRequest request, Long userId, String imageUrl) {
 		// TODO Auto-generated method stub
 		User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+	            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Issue issue = Issue.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .status(IssueStatus.REPORTED)
-                .priority(Priority.LOW)
-                .user(user)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+	    Department department = departmentRepository.findById(request.getDepartmentId())
+	            .orElseThrow(() -> new RuntimeException("Department not found"));
 
-        Issue savedIssue = issueRepository.save(issue);
+	    Issue issue= Issue.builder()
+	            .title(request.getTitle())
+	            .description(request.getDescription())
+	            .latitude(request.getLatitude())
+	            .longitude(request.getLongitude())
+	            .status(IssueStatus.REPORTED)
+	            .priority(Priority.LOW)
+	            .imageUrl(imageUrl)
+	            .user(user)
+	            .department(department)
+	            .createdAt(LocalDateTime.now())
+	            .updatedAt(LocalDateTime.now())
+	            .build();
 
-        return mapToResponse(savedIssue);
+	    Issue savedIssue = issueRepository.save(issue);
+
+	    return mapToResponse(savedIssue);
 	}
 
 	@Override
@@ -83,16 +90,49 @@ public class IssueServiceImpl implements IssueService {
 
 	        return mapToResponse(updatedIssue);
 	}
+	
+	@Override
+	public IssueResponse assignDepartment(Long issueId, Long departmentId) {
+
+	    Issue issue = issueRepository.findById(issueId)
+	            .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+	    Department department = departmentRepository.findById(departmentId)
+	            .orElseThrow(() -> new RuntimeException("Department not found"));
+
+	    issue.setDepartment(department);
+	    issue.setUpdatedAt(LocalDateTime.now());
+
+	    Issue updatedIssue = issueRepository.save(issue);
+
+	    return mapToResponse(updatedIssue);
+	}
+	
 	private IssueResponse mapToResponse(Issue issue) {
 
-        return IssueResponse.builder()
-                .id(issue.getId())
-                .title(issue.getTitle())
-                .description(issue.getDescription())
-                .status(issue.getStatus())
-                .priority(issue.getPriority())
-                .createdAt(issue.getCreatedAt())
-                .build();
+		return  IssueResponse.builder()
+		        .id(issue.getId())
+		        .title(issue.getTitle())
+		        .description(issue.getDescription())
+		        .status(issue.getStatus())
+		        .priority(issue.getPriority())
+		        .createdAt(issue.getCreatedAt())
+		        .departmentName(
+		                issue.getDepartment() != null ? issue.getDepartment().getName() : null
+		        )
+		        .imageUrl(issue.getImageUrl())
+		        .build();
     }
+	
+	@Override
+	public void updateImage(Long issueId, String fileName) {
+
+	    Issue issue = issueRepository.findById(issueId)
+	            .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+	    issue.setImageUrl(fileName);
+
+	    issueRepository.save(issue);
+	}
 
 }

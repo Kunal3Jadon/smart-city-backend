@@ -6,6 +6,7 @@ import com.smartcity.backend.dto.LoginRequest;
 import com.smartcity.backend.dto.RegisterRequest;
 import com.smartcity.backend.entity.User;
 import com.smartcity.backend.service.AuthService;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,12 +17,12 @@ public class AuthController {
 	private final AuthService authService;
 
     @PostMapping("/register")
-    public User register(@RequestBody RegisterRequest request) {
+    public User register(@Valid  @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public String login(@Valid  @RequestBody LoginRequest request) {
 
         return authService.login(request);
     }

@@ -41,7 +41,7 @@ public class IssueServiceImpl implements IssueService {
                 .latitude(request.getLatitude())
                 .longitude(request.getLongitude())
                 .status(IssueStatus.REPORTED)
-                .priority(Priority.LOW)
+                .priority(request.getPriority())
                 .user(user)
                 .department(department)
                 .createdAt(LocalDateTime.now())
@@ -96,6 +96,20 @@ public class IssueServiceImpl implements IssueService {
 	                .orElseThrow(() -> new RuntimeException("Issue not found"));
 
 	        issue.setStatus(status);
+	        issue.setUpdatedAt(LocalDateTime.now());
+
+	        Issue updatedIssue = issueRepository.save(issue);
+
+	        return mapToResponse(updatedIssue);
+	}
+	
+	@Override
+	public IssueResponse updateIssuePriority(Long id, Priority priority) {
+		// TODO Auto-generated method stub
+		 Issue issue = issueRepository.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Issue not found"));
+
+	        issue.setPriority(priority);
 	        issue.setUpdatedAt(LocalDateTime.now());
 
 	        Issue updatedIssue = issueRepository.save(issue);

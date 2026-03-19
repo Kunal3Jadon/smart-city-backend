@@ -9,6 +9,7 @@ import com.smartcity.backend.service.DepartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class DepartmentServiceImpl implements DepartmentService{
         Department department = Department.builder()
                 .name(request.getName())
                 .city(request.getCity())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Department saved = departmentRepository.save(department);

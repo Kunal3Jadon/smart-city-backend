@@ -5,6 +5,7 @@ import java.util.List;
 import com.smartcity.backend.dto.IssueRequest;
 import com.smartcity.backend.dto.IssueResponse;
 import com.smartcity.backend.entity.IssueStatus;
+import com.smartcity.backend.entity.Priority;
 
 public interface IssueService {
 	IssueResponse createIssue(IssueRequest request, Long userId, List<String> imageUrls);
@@ -20,4 +21,6 @@ public interface IssueService {
     IssueResponse assignDepartment(Long issueId, Long departmentId);
     
     void updateImage(Long issueId, String fileName);
+
+	IssueResponse updateIssuePriority(Long id, Priority priority);
 }

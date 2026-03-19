@@ -1,6 +1,9 @@
 package com.smartcity.backend.dto;
 
 import lombok.*;
+
+import com.smartcity.backend.entity.Priority;
+
 import jakarta.validation.constraints.*;
 
 @Getter
@@ -20,5 +23,8 @@ public class IssueRequest {
     
     @NotNull(message = "Department id is required")
     private Long departmentId;
+    
+    @NotNull
+    private Priority priority;
 
 }

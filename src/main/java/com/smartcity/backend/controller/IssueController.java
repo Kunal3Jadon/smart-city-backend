@@ -56,6 +56,11 @@ public class IssueController {
 	        return issueService.updateIssueStatus(id, request.getStatus());
 	    }
 	    
+	    @PutMapping("/{id}/priority")
+	    public IssueResponse updatePrioriy(@PathVariable Long id,@RequestBody UpdatePrioriyRequest request) {
+	        return issueService.updateIssuePriority(id, request.getPriority());
+	    }
+	    
 	    @PreAuthorize("hasRole('ADMIN')")
 	    @PutMapping("/{issueId}/assign-department")
 	    public IssueResponse assignDepartment(@PathVariable Long issueId,@RequestBody AssignDepartmentRequest request) {

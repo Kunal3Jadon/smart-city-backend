@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "issues")
@@ -22,8 +23,9 @@ public class Issue {
 
     private String description;
 
-    private String imageUrl;
-
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IssueImage> images;
+    
     private Double latitude;
 
     private Double longitude;

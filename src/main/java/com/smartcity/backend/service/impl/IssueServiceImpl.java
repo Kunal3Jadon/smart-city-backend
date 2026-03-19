@@ -8,9 +8,11 @@ import com.smartcity.backend.entity.*;
 import com.smartcity.backend.repository.DepartmentRepository;
 import com.smartcity.backend.repository.IssueRepository;
 import com.smartcity.backend.repository.UserRepository;
+import com.smartcity.backend.service.FileStorageService;
 import com.smartcity.backend.service.IssueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,34 +24,44 @@ public class IssueServiceImpl implements IssueService {
 	private final IssueRepository issueRepository;
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
+    private final FileStorageService fileStorageService;
     
-	@Override
-	public IssueResponse createIssue(IssueRequest request, Long userId, String imageUrl) {
-		// TODO Auto-generated method stub
-		User user = userRepository.findById(userId)
-	            .orElseThrow(() -> new RuntimeException("User not found"));
+    @Override
+    public IssueResponse createIssue(IssueRequest request, Long userId, List<String> imageUrls) {
 
-	    Department department = departmentRepository.findById(request.getDepartmentId())
-	            .orElseThrow(() -> new RuntimeException("Department not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-	    Issue issue= Issue.builder()
-	            .title(request.getTitle())
-	            .description(request.getDescription())
-	            .latitude(request.getLatitude())
-	            .longitude(request.getLongitude())
-	            .status(IssueStatus.REPORTED)
-	            .priority(Priority.LOW)
-	            .imageUrl(imageUrl)
-	            .user(user)
-	            .department(department)
-	            .createdAt(LocalDateTime.now())
-	            .updatedAt(LocalDateTime.now())
-	            .build();
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found"));
 
-	    Issue savedIssue = issueRepository.save(issue);
+        Issue issue = Issue.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .status(IssueStatus.REPORTED)
+                .priority(Priority.LOW)
+                .user(user)
+                .department(department)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
-	    return mapToResponse(savedIssue);
-	}
+        Issue savedIssue = issueRepository.save(issue);
+
+        List<IssueImage> images = imageUrls.stream()
+                .map(url -> IssueImage.builder()
+                        .imageUrl(url)
+                        .issue(savedIssue)
+                        .build())
+                .collect(Collectors.toList());
+
+        savedIssue.setImages(images);
+        issueRepository.save(savedIssue);
+
+        return mapToResponse(savedIssue);
+    }
 
 	@Override
 	public List<IssueResponse> getAllIssues() {
@@ -110,19 +122,23 @@ public class IssueServiceImpl implements IssueService {
 	
 	private IssueResponse mapToResponse(Issue issue) {
 
-		return  IssueResponse.builder()
-		        .id(issue.getId())
-		        .title(issue.getTitle())
-		        .description(issue.getDescription())
-		        .status(issue.getStatus())
-		        .priority(issue.getPriority())
-		        .createdAt(issue.getCreatedAt())
-		        .departmentName(
-		                issue.getDepartment() != null ? issue.getDepartment().getName() : null
-		        )
-		        .imageUrl(issue.getImageUrl())
-		        .build();
-    }
+	    List<String> images = issue.getImages()
+	            .stream()
+	            .map(img -> fileStorageService.getFileAsBase64(img.getImageUrl()))
+	            .collect(Collectors.toList());
+	    return IssueResponse.builder()
+	            .id(issue.getId())
+	            .title(issue.getTitle())
+	            .description(issue.getDescription())
+	            .status(issue.getStatus())
+	            .priority(issue.getPriority())
+	            .createdAt(issue.getCreatedAt())
+	            .departmentName(
+	                    issue.getDepartment() != null ? issue.getDepartment().getName() : null
+	            )
+	            .images(images)
+	            .build();
+	}
 	
 	@Override
 	public void updateImage(Long issueId, String fileName) {
@@ -130,7 +146,7 @@ public class IssueServiceImpl implements IssueService {
 	    Issue issue = issueRepository.findById(issueId)
 	            .orElseThrow(() -> new RuntimeException("Issue not found"));
 
-	    issue.setImageUrl(fileName);
+//	    issue.setImageUrl(fileName);
 
 	    issueRepository.save(issue);
 	}

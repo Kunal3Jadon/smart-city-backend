@@ -25,11 +25,13 @@ public class IssueController {
 		 public IssueResponse createIssue(
 		         @ModelAttribute IssueRequest request,
 		         @RequestParam Long userId,
-		         @RequestParam("file") MultipartFile file) {
+		         @RequestParam("files") List<MultipartFile> files) {
 	
-		     String fileName = fileStorageService.saveFile(file);
-	
-		     return issueService.createIssue(request, userId, fileName);
+			 List<String> fileNames = files.stream()
+			            .map(fileStorageService::saveFile)
+			            .toList();
+
+			    return issueService.createIssue(request, userId, fileNames);
 		 }
 	 	
 	 	@PreAuthorize("hasAnyRole('CITIZEN','ADMIN')")

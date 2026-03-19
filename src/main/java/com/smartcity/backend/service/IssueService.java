@@ -7,7 +7,7 @@ import com.smartcity.backend.dto.IssueResponse;
 import com.smartcity.backend.entity.IssueStatus;
 
 public interface IssueService {
-	IssueResponse createIssue(IssueRequest request, Long userId, String imageUrl);
+	IssueResponse createIssue(IssueRequest request, Long userId, List<String> imageUrls);
 	
     List<IssueResponse> getAllIssues();
 

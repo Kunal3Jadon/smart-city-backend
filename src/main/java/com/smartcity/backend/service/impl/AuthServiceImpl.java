@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.smartcity.backend.dto.LoginRequest;
+import com.smartcity.backend.dto.LoginResponse;
 import com.smartcity.backend.dto.RegisterRequest;
 import com.smartcity.backend.entity.Role;
 import com.smartcity.backend.entity.User;
@@ -35,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	public String login(LoginRequest request) {
+	public LoginResponse login(LoginRequest request) {
 
 		User user = userRepository
 	            .findByEmail(request.getEmail())
@@ -44,7 +45,14 @@ public class AuthServiceImpl implements AuthService {
 	    if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
 	        throw new RuntimeException("Invalid password");
 	    }
-
-	    return jwtService.generateToken(user.getEmail());
+	    
+	    LoginResponse response=LoginResponse.builder()
+	    		.id(user.getId())
+	    		.email(user.getEmail())
+	    		.name(user.getName())
+	    		.role(user.getRole())
+	    		.token(jwtService.generateToken(user.getEmail()))
+	    		.build();
+	    return response;
 	}
 }

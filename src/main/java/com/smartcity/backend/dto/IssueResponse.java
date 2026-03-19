@@ -1,6 +1,8 @@
 package com.smartcity.backend.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.*;
 import com.smartcity.backend.entity.IssueStatus;
 import com.smartcity.backend.entity.Priority;
@@ -16,5 +18,5 @@ public class IssueResponse {
 	 private Priority priority;
 	 private LocalDateTime createdAt;
 	 private String departmentName;
-	 private String imageUrl;
+	 private List<String> images;
 }

@@ -3,6 +3,7 @@ package com.smartcity.backend.controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.smartcity.backend.dto.LoginRequest;
+import com.smartcity.backend.dto.LoginResponse;
 import com.smartcity.backend.dto.RegisterRequest;
 import com.smartcity.backend.entity.User;
 import com.smartcity.backend.service.AuthService;
@@ -22,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid  @RequestBody LoginRequest request) {
+    public LoginResponse login(@Valid  @RequestBody LoginRequest request) {
 
         return authService.login(request);
     }

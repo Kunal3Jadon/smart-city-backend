@@ -25,6 +25,9 @@ WORKDIR /app
 # Copy JAR from builder stage
 COPY --from=builder /app/target/*.jar app.jar
 
+COPY --from=builder /app/uploads ./uploads
+
+
 # Expose port (Render overrides this automatically)
 EXPOSE 8080
 

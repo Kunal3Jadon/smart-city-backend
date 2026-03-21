@@ -38,29 +38,17 @@ public class FileStorageServiceImpl implements FileStorageService  {
         }
     }
     
-    @Override
     public String getFileAsBase64(String fileName) {
         try {
-            Path path = Paths.get(uploadDir)
-                    .toAbsolutePath()
-                    .normalize()
-                    .resolve(fileName);
-
-            System.out.println("Trying to read: " + path);
-
-            if (!Files.exists(path)) {
-                System.out.println("❌ File not found: " + path);
-                return null; // DO NOT throw exception
-            }
-
+            Path path = Paths.get(uploadDir, fileName);
             byte[] bytes = Files.readAllBytes(path);
+
             String base64 = Base64.getEncoder().encodeToString(bytes);
 
             return "data:image/jpeg;base64," + base64;
 
         } catch (IOException e) {
-            e.printStackTrace();
-            return null; // DO NOT crash API
+            throw new RuntimeException("Failed to read file", e);
         }
     }
 }

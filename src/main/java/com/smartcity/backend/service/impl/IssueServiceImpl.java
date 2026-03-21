@@ -1,5 +1,6 @@
 package com.smartcity.backend.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.smartcity.backend.dto.IssueRequest;
@@ -136,10 +137,20 @@ public class IssueServiceImpl implements IssueService {
 	
 	private IssueResponse mapToResponse(Issue issue) {
 
-	    List<String> images = issue.getImages()
-	            .stream()
-	            .map(img -> fileStorageService.getFileAsBase64(img.getImageUrl()))
-	            .collect(Collectors.toList());
+	    List<String> images = new ArrayList<>();
+
+	    if (issue.getImages() != null) {
+	        for (IssueImage img : issue.getImages()) {
+	            try {
+	                String base64 = fileStorageService.getFileAsBase64(img.getImageUrl());
+	                images.add(base64);
+	            } catch (Exception e) {
+	                System.out.println("❌ Error reading image: " + img.getImageUrl());
+	                e.printStackTrace(); // VERY IMPORTANT
+	            }
+	        }
+	    }
+
 	    return IssueResponse.builder()
 	            .id(issue.getId())
 	            .title(issue.getTitle())
